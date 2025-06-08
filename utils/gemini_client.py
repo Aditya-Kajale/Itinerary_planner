@@ -1,26 +1,20 @@
 # utils/gemini_client.py
 
-import os
 import json
 import streamlit as st
 import google.generativeai as genai
-# Import the new prompt creation function
 from prompts.itinerary_prompts import create_itinerary_prompt
+# --- UPDATED: Import the new helper function ---
+from utils.helpers import load_google_api_key
 
-# --- Configuration ---
-try:
-    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
-except (FileNotFoundError, KeyError):
-    GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+# --- UPDATED: Simplified Configuration ---
+GOOGLE_API_KEY = load_google_api_key()
 
 if GOOGLE_API_KEY:
     try:
         genai.configure(api_key=GOOGLE_API_KEY)
     except Exception as e:
         st.error(f"🔴 Error configuring Google AI SDK: {e}")
-else:
-    if 'st' in globals() and hasattr(st, 'error'):
-        st.error("🔴 Google API Key is missing. Please set it in st.secrets or as an environment variable.")
 
 # --- Model Initialization ---
 def get_gemini_model(model_name="gemini-2.0-flash"):
@@ -38,14 +32,13 @@ def get_itinerary_from_gemini(interests, time_available, budget, location_query)
     Generates itinerary suggestions using the Gemini API.
     """
     if not GOOGLE_API_KEY:
-        st.error("🔴 Gemini API cannot be called: Google API Key is not configured.")
+        # Error is already shown by load_google_api_key, so we just exit gracefully.
         return None, None
 
     model = get_gemini_model()
     if not model:
         return None, None
 
-    # --- UPDATED: Use the imported function to create the prompt ---
     prompt_template = create_itinerary_prompt(
         interests, time_available, budget, location_query
     )

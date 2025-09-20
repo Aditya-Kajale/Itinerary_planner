@@ -55,7 +55,7 @@ graph TD
     subgraph Google Cloud
         B(Flask UI on Cloud Run);
         C(MCP Server on Cloud Run);
-        D{Gemini 1.5 Flash AI};
+        D{Gemini 2.5 Flash AI};
         E[find_options Function];
         F[get_realtime_conditions Function];
         G[(Vertex AI Search)];
